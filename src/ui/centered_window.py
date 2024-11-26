@@ -9,8 +9,8 @@ class CenteredWindow(ctk.CTk):
         self.title(title)
 
         # Obtener la resolucion de la pantalla:
-        screen_width = self.winfo.screenwidth()
-        screen_height = self.winfo.screenheight()
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
 
         # Calcula el tamaño de la ventana según procentaje de la pantalla:
         window_width = int(screen_width * width_percentage)
@@ -22,17 +22,18 @@ class CenteredWindow(ctk.CTk):
 
         self.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
 
+        #Configura la ventana (fuera del constructor)
         self.configure_window()
 
-        def configure_window(self):
-            # Configuraciones adicionales:
-            self.configure(bg_color="lightgray")
+    def configure_window(self):
+        # Configuraciones adicionales:
+        self.configure(bg_color="lightgray")
             # Ejemplo de añadir un botón
-            btn = ctk.CTkButton(self, text="Haz clic aquí", command=self.on_button_click)
-            btn.pack(pady=20)
+        btn = ctk.CTkButton(self, text="Haz clic aquí", command=self.on_button_click)
+        btn.pack(pady=20)
 
-        def on_button_click(self):
-            print("¡Botón clickeado!")
+    def on_button_click(self):
+        print("¡Botón clickeado!")
 
 
 

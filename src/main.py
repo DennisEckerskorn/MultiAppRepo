@@ -1,4 +1,4 @@
-from MutiFunctionProgramProject.ui.centered_window import CenteredWindow
+from ui.centered_window import CenteredWindow
 
 def main():
     # Crear una instancia de la ventana centrada
