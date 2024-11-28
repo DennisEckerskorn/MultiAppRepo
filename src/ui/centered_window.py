@@ -1,4 +1,7 @@
 import customtkinter as ctk
+import webbrowser
+import subprocess
+import os
 
 class CenteredWindow(ctk.CTk):
     def __init__(self, title="MultiApp", width_percentage=0.8, height_percentage=0.8):
@@ -28,9 +31,59 @@ class CenteredWindow(ctk.CTk):
     def configure_window(self):
         # Configuraciones adicionales:
         self.configure(bg_color="lightgray")
-            # Ejemplo de añadir un botón
-        btn = ctk.CTkButton(self, text="Haz clic aquí", command=self.on_button_click)
-        btn.pack(pady=20)
+
+        # Frame para organizar los botones:
+        button_frame = ctk.CTkFrame(self)
+        button_frame.pack(side=ctk.TOP, anchor=ctk.NW, padx=20, pady=20)
+
+        buttons = [
+            ("Abrir Google Chrome", self.open_chrome),
+            ("Abrir Visual Studio Code", self.open_visual_studio_code),
+            ("Abrir Explorador", self.open_explorer),
+            ("Abrir NotePad++", self.open_notepad_plus)
+        ]
+
+        for text, command in buttons:
+            btn = ctk.CTkButton(
+                button_frame,
+                text=text,
+                command=command,
+                width=200
+            )
+            btn.pack(pady=10, padx=20)
+
+
+
+    def open_chrome(self):
+        try:
+            webbrowser.get('chrome').open('https://google.es')
+        except:
+            webbrowser.open('https://google.es')
+
+
+    def open_visual_studio_code(self):
+        try:
+            vs_code_path = r"C:\Program Files\Microsoft VS Code\Code.exe"
+            subprocess.Popen([vs_code_path])
+        except FileNotFoundError:
+            print ("Can't find VSCode")
+
+
+    def open_explorer(self):
+        try:
+            subprocess.Popen(['explorer.exe'])
+        except:
+            print("Can't open Windows Explorer")
+
+
+    def open_notepad_plus(self):
+        try:
+            notepad_path = r"C:\Program Files\Notepad++\notepad++.exe"
+            subprocess.Popen([notepad_path])
+        except:
+            print("Can't open NotePad++")
+
+
 
     def on_button_click(self):
         print("¡Botón clickeado!")
