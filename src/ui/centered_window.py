@@ -25,12 +25,14 @@ class CenteredWindow(ctk.CTk):
 
         self.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
 
-        #Configura la ventana (fuera del constructor)
+        #Configura la ventana
         self.configure_window()
 
     def configure_window(self):
-        # Configuraciones adicionales:
+        # Configuracion de la ventana:
         self.configure(bg_color="lightgray")
+
+        self.create_menuBar()
 
         # Frame para organizar los botones:
         button_frame = ctk.CTkFrame(self)
@@ -53,6 +55,25 @@ class CenteredWindow(ctk.CTk):
             btn.pack(pady=10, padx=20)
 
 
+
+    def create_menuBar(self):
+        menu_bar = ctk.CTkFrame(self, height=25, fg_color="lightgray")
+        menu_bar.pack(side=ctk.TOP, fill=ctk.X)
+
+        #Botones del menuBar:
+        # Agregar botones de menú
+        menus = ["Procesos", "T2.Threads", "T3.Sockets", "T4.Servicios", "T5.Seguridad", "Configuración"]
+        for menu in menus:
+            btn = ctk.CTkButton(
+                menu_bar,
+                text=menu,
+                command=lambda m=menu: self.on_menu_click(m),
+                width=100,
+                height=20,
+                fg_color="blue",
+                hover_color="lightblue"
+            )
+            btn.pack(side=ctk.LEFT, padx=5, pady=5)
 
     def open_chrome(self):
         try:
@@ -85,8 +106,8 @@ class CenteredWindow(ctk.CTk):
 
 
 
-    def on_button_click(self):
-        print("¡Botón clickeado!")
+    def on_menu_click(self, menu_name):
+        self.text_area.insert(ctk.END, f"Menú seleccionado: {menu_name}\n")
 
 
 
