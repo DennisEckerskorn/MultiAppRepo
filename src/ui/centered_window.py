@@ -31,31 +31,15 @@ class CenteredWindow(ctk.CTk):
     def configure_window(self):
         # Configuracion de la ventana:
         self.configure(bg_color="lightgray")
-
+        
+        #Barra superior con Botones:
         self.create_menuBar()
+        self.create_left_panel()
+        self.create_right_panel()
+        self.create_center_panel()
+        self.create_bottom_bar()
 
-        # Frame para organizar los botones:
-        button_frame = ctk.CTkFrame(self)
-        button_frame.pack(side=ctk.TOP, anchor=ctk.NW, padx=20, pady=20)
-
-        buttons = [
-            ("Abrir Google Chrome", self.open_chrome),
-            ("Abrir Visual Studio Code", self.open_visual_studio_code),
-            ("Abrir Explorador", self.open_explorer),
-            ("Abrir NotePad++", self.open_notepad_plus)
-        ]
-
-        for text, command in buttons:
-            btn = ctk.CTkButton(
-                button_frame,
-                text=text,
-                command=command,
-                width=200
-            )
-            btn.pack(pady=10, padx=20)
-
-
-
+        
     def create_menuBar(self):
         menu_bar = ctk.CTkFrame(self, height=25, fg_color="lightgray")
         menu_bar.pack(side=ctk.TOP, fill=ctk.X)
@@ -74,6 +58,7 @@ class CenteredWindow(ctk.CTk):
                 hover_color="lightblue"
             )
             btn.pack(side=ctk.LEFT, padx=5, pady=5)
+
 
     def open_chrome(self):
         try:
@@ -106,8 +91,97 @@ class CenteredWindow(ctk.CTk):
 
 
 
-    def on_menu_click(self, menu_name):
-        self.text_area.insert(ctk.END, f"Menú seleccionado: {menu_name}\n")
+    def create_left_panel(self):
+        # Panel izquierdo
+        left_panel = ctk.CTkFrame(self, fg_color="lightgray", width=200)
+        left_panel.pack(side=ctk.LEFT, fill=ctk.Y, padx=10, pady=10)
+
+        # Secciones y botones
+        sections = {
+        "": [("Extraer datos", self.dummy_action),
+            ("Navegar", self.open_chrome),
+            ("Buscar API Google", self.dummy_action)],
+            "Aplicaciones": [("Visual Code", self.open_visual_studio_code),
+                            ("Windows Explorer", self.open_explorer), ("Notepad++", self.open_notepad_plus)],
+        "Procesos batch": [("Copias de seguridad", self.dummy_action)],
+        }
+
+        for section, buttons in sections.items():
+            if section:
+                section_label = ctk.CTkLabel(left_panel, text=section, font=("Arial", 12, "bold"))
+                section_label.pack(anchor=ctk.W, pady=5, padx=10)
+
+            for text, command in buttons:
+                btn = ctk.CTkButton(left_panel, text=text, command=command, width=150)
+                btn.pack(pady=5, padx=10)
+
+
+    def create_center_panel(self):
+        # Panel central con pestañas
+        center_panel = ctk.CTkFrame(self, fg_color="white")
+        center_panel.pack(side=ctk.LEFT, fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+        tab_view = ctk.CTkTabview(center_panel, width=400, height=300)
+        tab_view.pack(fill=ctk.BOTH, expand=True)
+
+        tabs = ["Resultados", "Navegador", "Correos", "Tareas", "Alarmas", "Enlaces"]
+        for tab in tabs:
+            tab_view.add(tab)
+
+        # Agregar contenido a las pestañas
+        for tab in tabs:
+            label = ctk.CTkLabel(tab_view.tab(tab), text=f"Contenido de {tab}", font=("Arial", 12))
+            label.pack(pady=10)
+
+
+    def create_right_panel(self):
+        # Panel derecho
+        right_panel = ctk.CTkFrame(self, fg_color="lightgray", width=250)
+        right_panel.pack(side=ctk.RIGHT, fill=ctk.Y, padx=10, pady=10)
+
+        # Chat
+        chat_label = ctk.CTkLabel(right_panel, text="Chat", font=("Arial", 14, "bold"), text_color="red")
+        chat_label.pack(anchor=ctk.W, pady=5, padx=10)
+
+        chat_box = ctk.CTkTextbox(right_panel, height=100)
+        chat_box.pack(fill=ctk.X, padx=10, pady=5)
+
+        send_button = ctk.CTkButton(right_panel, text="Enviar", command=self.dummy_action)
+        send_button.pack(pady=5, padx=10)
+
+        # Lista de alumnos
+        for i in range(1, 4):
+            student_label = ctk.CTkLabel(right_panel, text=f"Alumno {i}", font=("Arial", 12, "bold"), text_color="black")
+            student_label.pack(anchor=ctk.W, pady=5, padx=10)
+
+            student_info = ctk.CTkLabel(
+                right_panel,
+                text="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                wraplength=200,
+                justify="left",
+            )
+            student_info.pack(anchor=ctk.W, padx=10)
+
+
+    def create_bottom_bar(self):
+        # Barra inferior
+        bottom_bar = ctk.CTkFrame(self, fg_color="lightblue", height=40)
+        bottom_bar.pack(side=ctk.BOTTOM, fill=ctk.X)
+
+        info_labels = [
+        "Correos sin leer: 0",
+        "Temperatura local: 25°C",
+        "Fecha: 02/12/2024",
+        "Hora: 14:30",
+        ]
+
+        for info in info_labels:
+            label = ctk.CTkLabel(bottom_bar, text=info, font=("Arial", 12), text_color="black")
+            label.pack(side=ctk.LEFT, padx=10)
+
+    def dummy_action(self):
+        print("Acción no implementada")
+
 
 
 
