@@ -167,17 +167,16 @@ class CenteredWindow(ctk.CTk):
         threading.Thread(target=self.update_emails, daemon=True).start()
 
     def update_time(self):
-        while True:
-            # Obtén la hora y la fecha actual
-            current_time = datetime.now().strftime('%H:%M:%S')
-            current_date = datetime.now().strftime('%d/%m/%Y')
+        # Obtén la hora y la fecha actual
+        current_time = datetime.datetime.now().strftime('%H:%M:%S')
+        current_date = datetime.datetime.now().strftime('%d/%m/%Y')
 
-            # Actualiza las etiquetas
-            self.info_labels["hora"].configure(text=f"Hora: {current_time}")
-            self.info_labels["fecha"].configure(text=f"Fecha: {current_date}")
+        # Actualiza las etiquetas en el hilo principal
+        self.info_labels["hora"].configure(text=f"Hora: {current_time}")
+        self.info_labels["fecha"].configure(text=f"Fecha: {current_date}")
 
-            # Programa la próxima actualización en 1000 ms (1 segundo)
-            time.sleep(1)
+        # Programa la próxima ejecución en 1000 ms (1 segundo)
+        self.after(1000, self.update_time)
         
             
 
