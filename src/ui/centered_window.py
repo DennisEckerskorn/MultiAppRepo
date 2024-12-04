@@ -1,10 +1,13 @@
 import customtkinter as ctk
+import tkinter as tk
 import webbrowser
 import subprocess
 import os
+import threading
 
 from services.threads_manager import ThreadsManager
 from services.processes_manager import ProcessManager
+from services.tetris_game import TetrisGame
 
 
 class CenteredWindow(ctk.CTk):
@@ -75,14 +78,52 @@ class CenteredWindow(ctk.CTk):
         tab_view = ctk.CTkTabview(center_panel, width=500, height=500)
         tab_view.pack(fill=ctk.BOTH, expand=True)
 
-        tabs = ["Resultados Scrapping", "Navegador", "Correos", "Juego", "Sistema"]
-        for tab in tabs:
-            tab_view.add(tab)
+        # Crear pestañas y manejar contenido por separado
+        for tab_name in ["Resultados Scrapping", "Navegador", "Correos", "Juego", "Sistema"]:
+            tab = tab_view.add(tab_name)
 
-        # Agregar contenido a las pestañas
-        for tab in tabs:
-            label = ctk.CTkLabel(tab_view.tab(tab), text=f"Contenido de {tab}", font=("Arial", 12))
-            label.pack(pady=10)
+            if tab_name == "Juego":
+                # Crear un marco intermedio para centrar
+                game_frame = ctk.CTkFrame(tab)
+                game_frame.pack(expand=True)
+
+                # Botones para el juego
+                button_frame = ctk.CTkFrame(game_frame)
+                button_frame.pack(pady=10)
+
+                start_button = ctk.CTkButton(button_frame, text="Start Game", command=self.start_tetris_game)
+                start_button.pack(side=tk.LEFT, padx=5)
+
+                pause_button = ctk.CTkButton(button_frame, text="Pause Game", command=self.pause_tetris_game)
+                pause_button.pack(side=tk.LEFT, padx=5)
+
+                restart_button = ctk.CTkButton(button_frame, text="Restart Game", command=self.restart_tetris_game)
+                restart_button.pack(side=tk.LEFT, padx=5)
+
+                # Agregar el Tetris dentro de un contenedor
+                self.tetris_game = TetrisGame(game_frame)
+                self.tetris_game.pack()
+
+            else:
+                # Agregar contenido genérico a otras pestañas
+                label = ctk.CTkLabel(tab, text=f"Contenido de {tab_name}", font=("Arial", 12))
+                label.pack(pady=10)
+
+    def start_tetris_game(self):
+        """Método para iniciar el juego."""
+        if not self.tetris_game.running:
+            self.tetris_game.running = True
+            self.tetris_game.update_game()
+
+    def pause_tetris_game(self):
+        """Método para pausar el juego."""
+        self.tetris_game.running = False
+
+    def restart_tetris_game(self):
+        """Método para reiniciar el juego."""
+        self.tetris_game.reset_game()
+
+
 
     def create_right_panel(self):
         # Panel derecho
