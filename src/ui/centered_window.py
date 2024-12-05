@@ -8,18 +8,19 @@ import threading
 from services.threads_manager import ThreadsManager
 from services.processes_manager import ProcessManager
 from services.tetris_game import TetrisGame
+from services.system_monitor import SystemMonitor
 
 
 class CenteredWindow(ctk.CTk):
     def __init__(self, title="MultiApp", width_percentage=0.8, height_percentage=0.8):
         # Inicializacion de la clase:
         super().__init__()
-
-        # Titulo de la ventana:
         self.title(title)
 
+        # Inicializar managers (orden es importante)
         self.thread_manager = ThreadsManager(self)
         self.process_manager = ProcessManager()
+        self.system_monitor = None
 
         # Obtener la resolucion de la pantalla:
         screen_width = self.winfo_screenwidth()
@@ -38,6 +39,8 @@ class CenteredWindow(ctk.CTk):
         #Configura la ventana
         self.configure_window()
 
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
     def configure_window(self):
         # Configuracion de la ventana:
         self.configure(bg_color="lightgray")
@@ -45,7 +48,17 @@ class CenteredWindow(ctk.CTk):
         self.create_right_panel()
         self.create_center_panel()
         self.create_bottom_bar()
+
         self.thread_manager.start_threads()
+
+    
+
+    def on_close(self):
+        """Maneja el cierre de la ventana"""
+        self.thread_manager.stop_threads()
+        self.destroy()
+
+
 
     def create_left_panel(self):
         # Panel izquierdo
@@ -70,6 +83,8 @@ class CenteredWindow(ctk.CTk):
                 btn = ctk.CTkButton(left_panel, text=text, command=command, width=150)
                 btn.pack(pady=5, padx=10)
 
+
+
     def create_center_panel(self):
         # Panel central con pestañas
         center_panel = ctk.CTkFrame(self)
@@ -82,7 +97,18 @@ class CenteredWindow(ctk.CTk):
         for tab_name in ["Resultados Scrapping", "Navegador", "Correos", "Juego", "Sistema"]:
             tab = tab_view.add(tab_name)
 
-            if tab_name == "Juego":
+            if tab_name == "Sistema":
+                # Crear un frame para los gráficos del sistema  
+                system_frame = ctk.CTkFrame(tab)  
+                system_frame.pack(fill=ctk.BOTH, expand=True, padx=5, pady=5)  
+
+                # Inicializar SystemMonitor con el frame de la pestaña  
+                self.system_monitor = SystemMonitor(system_frame)  
+
+                # Asignar el system_monitor al thread_manager  
+                self.thread_manager.set_system_monitor(self.system_monitor)
+
+            elif tab_name == "Juego":
                 # Crear un marco intermedio para centrar
                 game_frame = ctk.CTkFrame(tab)
                 game_frame.pack(expand=True)
@@ -109,15 +135,21 @@ class CenteredWindow(ctk.CTk):
                 label = ctk.CTkLabel(tab, text=f"Contenido de {tab_name}", font=("Arial", 12))
                 label.pack(pady=10)
 
+
+
     def start_tetris_game(self):
         """Método para iniciar el juego."""
         if not self.tetris_game.running:
             self.tetris_game.running = True
             self.tetris_game.update_game()
 
+
+
     def pause_tetris_game(self):
         """Método para pausar el juego."""
         self.tetris_game.running = False
+
+
 
     def restart_tetris_game(self):
         """Método para reiniciar el juego."""
@@ -153,6 +185,8 @@ class CenteredWindow(ctk.CTk):
             )
             student_info.pack(anchor=ctk.W, padx=10)
 
+
+
     def create_bottom_bar(self):
         # Crear la barra inferior
         self.bottom_bar = ctk.CTkFrame(self, fg_color="lightblue", height=40)
@@ -169,6 +203,8 @@ class CenteredWindow(ctk.CTk):
         # Empaquetar las etiquetas horizontalmente
         for label in self.info_labels.values():
             label.pack(side=ctk.LEFT, padx=10, pady=5)
+
+
 
     def dummy_action(self):
         print("Acción no implementada")

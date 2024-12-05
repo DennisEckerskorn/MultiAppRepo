@@ -1,35 +1,86 @@
-import threading
 import datetime
 import time
 import requests
 import random
 
+from services.threaden_task import ThreadenTask
+from services.system_monitor import SystemMonitor
+
 class ThreadsManager:
+    """Constructor"""
     def __init__(self, ui_instance):
         self.ui_instance = ui_instance
+        self.system_monitor = None
+        self.tasks = {
+            "time": ThreadenTask(),
+            "temperature": ThreadenTask(), 
+            "emails":ThreadenTask(),
+        }
+        self.system_monitor_tasks = {}
+      
+
+
+    def set_system_monitor(self, system_monitor):
+        """Asigna el monitor del sistema y crea sus tareas"""
+        self.system_monitor = system_monitor
+        for metric in system_monitor.metrics.keys():
+            self.system_monitor_tasks[metric] = ThreadenTask()
+
+
 
     def start_threads(self):
-        # Hilo para actualizar el reloj
-        threading.Thread(target=self.update_time, daemon=True).start()
+        """Se inician los hilos, Tiempo, Temperatura, Emails"""
+        self.tasks["time"].start(self.update_time)
+        self.tasks["temperature"].start(self.update_temperature)
+        self.tasks["emails"].start(self.update_emails)
 
-        # Hilo para actualizar la temperatura
-        threading.Thread(target=self.update_temperature, daemon=True).start()
+        if self.system_monitor:
+            for metric in self.system_monitor.metrics.keys():
+                self.system_monitor_tasks[metric].start(
+                    self.update_system_metric,
+                    metric
+                )
 
-        # Hilo para actualizar correos (simulado)
-        threading.Thread(target=self.update_emails, daemon=True).start()
 
+
+    def stop_threads(self):
+        """Recorre tasks y para los hilos"""
+        for task in self.tasks.values():
+            task.stop()
+
+        for task in self.system_monitor_tasks.values():
+            task.stop()
+
+        if self.system_monitor:
+            self.system_monitor.running = False
+
+
+
+    def update_system_metric(self, metric):  
+        """Actualiza una métrica específica del monitor del sistema."""  
+        while self.system_monitor_tasks[metric].running:  
+            try:  
+                self.system_monitor.update_metric(metric)  
+                time.sleep(self.system_monitor.metrics[metric]["interval"])  
+            except Exception as e:  
+                print(f"Error updating metric {metric}: {e}")  
+
+
+        
     def update_time(self):
-        while True:
+        while self.tasks["time"].running:
             current_time = datetime.datetime.now().strftime('%H:%M:%S')
             current_date = datetime.datetime.now().strftime('%d/%m/%Y')
             self.ui_instance.after(0, lambda: self.ui_instance.info_labels["hora"].configure(text=f"Hora: {current_time}"))
             self.ui_instance.after(0, lambda: self.ui_instance.info_labels["fecha"].configure(text=f"Fecha: {current_date}"))
             time.sleep(1)
 
+
+
     def update_temperature(self):
         API_KEY = "4ba2b87d7fa32934530b5b4a5a83ebf7"  # Reemplaza con tu clave de OpenWeatherMap
         CITY = "Madrid"  # Cambia por tu ciudad
-        while True:
+        while self.tasks["temperature"].running:
             try:
                 temperature = self.get_real_temperature(API_KEY, CITY)
                 if temperature is not None:
@@ -41,6 +92,8 @@ class ThreadsManager:
                 print(f"Error al obtener la temperatura: {e}")
             time.sleep(600)  # Actualiza cada 10 minutos
 
+
+
     def get_real_temperature(self, api_key, city):
         url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
         response = requests.get(url)
@@ -50,13 +103,17 @@ class ThreadsManager:
         else:
             print(f"Error al obtener la temperatura: {response.status_code}")
             return None
+        
+
 
     def update_emails(self):
         count = 0
-        while True:
+        while self.tasks["emails"].running:
             count += random.randint(0, 2)  # Simula la llegada de 0-2 correos
             self.ui_instance.after(
                 0,
                 lambda: self.ui_instance.info_labels["emails"].configure(text=f"Correos sin leer: {count}")
             )
-            time.sleep(10)  # Actualiza cada 10 segundos
+            time.sleep(20)  # Actualiza cada 10 segundos
+
+   
