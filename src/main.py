@@ -1,11 +1,11 @@
 from ui.centered_window import CenteredWindow
 
 def main():
-    # Crear una instancia de la ventana centrada
-    app = CenteredWindow()
-    
-    # Ejecutar la ventana
-    app.mainloop()
+    try:
+        app = CenteredWindow()
+        app.mainloop()
+    except Exception as e:
+        print(f"Error al iniciar la aplicación: {e}")
 
 if __name__ == "__main__":
     main()
