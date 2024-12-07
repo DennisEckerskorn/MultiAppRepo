@@ -10,13 +10,13 @@ class TetrisGame(tk.Canvas):
         self.grid = [[0] * self.cols for _ in range(self.rows)]
 
         self.current_piece = None
-        self.running = True
+        self.running = False
         self.init_game()
 
     def init_game(self):
         self.bind_all("<Key>", self.handle_keypress)
         self.spawn_piece()
-        self.update_game()
+        #self.update_game()
 
     def spawn_piece(self):
         shapes = [
@@ -106,7 +106,7 @@ class TetrisGame(tk.Canvas):
             self.rotate_piece()
 
     def update_game(self):
-        if self.running:
+        if self.running and self.winfo_exists():
             if not self.can_move(1, 0):
                 self.place_piece()
             else:

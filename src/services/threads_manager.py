@@ -5,6 +5,7 @@ import random
 
 from services.threaden_task import ThreadenTask
 from services.system_monitor import SystemMonitor
+from services.tetris_game import TetrisGame
 
 class ThreadsManager:
     """Constructor"""
@@ -15,6 +16,7 @@ class ThreadsManager:
             "time": ThreadenTask(),
             "temperature": ThreadenTask(), 
             "emails":ThreadenTask(),
+            "tetris_game":ThreadenTask(),
         }
         self.system_monitor_tasks = {}
       
@@ -41,18 +43,38 @@ class ThreadsManager:
                     metric
                 )
 
+        if hasattr(self.ui_instance, "tetris_game"):
+            self.tasks["tetris_game"].start(self.update_tetris_game)
+
 
 
     def stop_threads(self):
         """Recorre tasks y para los hilos"""
-        for task in self.tasks.values():
+        for name, task in self.tasks.items():
             task.stop()
+            print(f"Hilo '{name}' detenido")
 
-        for task in self.system_monitor_tasks.values():
+        for name, task in self.system_monitor_tasks.items():
             task.stop()
+            print(f"Hilo de monitor del sistema '{name}' detenido.")
 
         if self.system_monitor:
             self.system_monitor.running = False
+
+
+    def update_tetris_game(self):
+        """Ciclo de actualizacion del tetris game"""
+        while self.tasks["tetris_game"].running:
+            try:
+                if self.ui_instance.tetris_game.running and self.ui_instance.tetris_game.winfo_exists():
+                    self.ui_instance.tetris_game.update_game()
+                time.sleep(0.5)
+            except Exception as e:
+                print(f"Error en update_tetris_game: {e}")
+                break
+                
+
+
 
 
 

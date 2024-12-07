@@ -56,6 +56,13 @@ class CenteredWindow(ctk.CTk):
     def on_close(self):
         """Maneja el cierre de la ventana"""
         self.thread_manager.stop_threads()
+
+        if hasattr(self, "tetris_game") and self.tetris_game.running:
+            self.tetris_game.stop_game()
+
+        if "tetris_game" in self.thread_manager.tasks:  
+            self.thread_manager.tasks["tetris_game"].stop()
+
         self.destroy()
 
 
@@ -141,7 +148,7 @@ class CenteredWindow(ctk.CTk):
         """Método para iniciar el juego."""
         if not self.tetris_game.running:
             self.tetris_game.running = True
-            self.tetris_game.update_game()
+            #self.tetris_game.update_game()
 
 
 

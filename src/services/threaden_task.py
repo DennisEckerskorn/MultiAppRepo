@@ -19,4 +19,5 @@ class ThreadenTask:
         """Detiene el hilo"""
         self.running = False
         if self.thread:
-            self.thread.join()
+            self.thread.join(timeout=1)
+            self.thread = None
