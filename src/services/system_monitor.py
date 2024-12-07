@@ -19,7 +19,12 @@ class SystemMonitor:
                 "data": [],  
                 "fetch_func": lambda: psutil.virtual_memory().percent,  
                 "interval": 1  
-            }  
+            },
+            "Processes": {
+                "data": [],
+                "fetch_func": lambda: self.get_process_count,
+                "interval": 1
+            }
         }  
         self.graphs = {}  
         self.init_graphs()  
@@ -75,3 +80,7 @@ class SystemMonitor:
             graph["figure"].canvas.draw()  
 
         self.parent_frame.after(0, redraw)  
+
+    def get_process_count(self):  
+        """Obtiene el número de procesos actuales."""  
+        return len(psutil.pids())
