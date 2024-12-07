@@ -74,10 +74,6 @@ class ThreadsManager:
                 break
                 
 
-
-
-
-
     def update_system_metric(self, metric):  
         """Actualiza una métrica específica del monitor del sistema."""  
         while self.system_monitor_tasks[metric].running:  

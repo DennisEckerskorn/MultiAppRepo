@@ -112,7 +112,6 @@ class TetrisGame(tk.Canvas):
             else:
                 self.move_piece(1, 0)
             self.render()
-            self.after(500, self.update_game)
 
     def render(self):
         self.delete("all")
