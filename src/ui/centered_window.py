@@ -92,11 +92,11 @@ class CenteredWindow(ctk.CTk):
 
         scrapping_label = ctk.CTkLabel(left_panel, text="Scrapping", font=("Arial", 12, "bold"))
         scrapping_label.pack(anchor=ctk.W, pady=5, padx=10)
-        url_entry = ctk.CTkEntry(left_panel, placeholder_text="Introduce la URL")
-        url_entry.pack(pady=5, padx=10)
+        url_entry = ctk.CTkEntry(left_panel, placeholder_text="Introduce la URL")  
+        url_entry.pack(pady=5, padx=10)  
 
         self.left_panel = left_panel
-        self.left_panel.url_entry = url_entry
+        self.left_panel.url_entry = url_entry  
         start_button = ctk.CTkButton(left_panel, text="Iniciar Scrapping", command=lambda:
                                      self.thread_manager.tasks["scrapper"].start(self.thread_manager.scrapper.start_scraping))
         start_button.pack(pady=5, padx=10)
@@ -117,6 +117,14 @@ class CenteredWindow(ctk.CTk):
         # Crear pestañas y manejar contenido por separado
         for tab_name in ["Scrapping", "Navegador", "Correos", "Juego", "Sistema"]:
             tab = tab_view.add(tab_name)
+
+            if tab_name == "Scrapping":
+                text_widget = ctk.CTkTextbox(tab, width=500, height=400)
+                text_widget.pack(fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+                text_widget.configure(state="disabled")
+
+                self.tabs = {"Scrapping": {"text_widget": text_widget}}
 
             if tab_name == "Sistema":
                 # Crear un frame para los gráficos del sistema  
