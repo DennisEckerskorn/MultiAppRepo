@@ -42,6 +42,16 @@ class Scrapper:
     def stop_scraping(self):
         """Detiene el proceso de scraping"""
         self.running = False
+        print("Scrapping detenido. Proceso finalizado.")
+
+        # Actualiza la pestaña "Scrapping" con un mensaje  
+        tab = self.ui_instance.tabs["Scrapping"]  
+        text_widget = tab["text_widget"]  
+
+        text_widget.configure(state="normal")  
+        text_widget.insert("end", "Scrapping finalizado.\n")  
+        text_widget.see("end")  
+        text_widget.configure(state="disabled")
 
     def scrape_page(self, url):
         """Scrapea una web y busca los enlaces"""

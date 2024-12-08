@@ -52,7 +52,6 @@ class CenteredWindow(ctk.CTk):
         self.thread_manager.start_threads()
 
     
-
     def on_close(self):
         """Maneja el cierre de la ventana"""
         self.thread_manager.stop_threads()
