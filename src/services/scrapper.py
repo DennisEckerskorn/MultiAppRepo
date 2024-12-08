@@ -82,16 +82,19 @@ class Scrapper:
     def save_links_to_db(self, url, links):
         """Guarda los enlaces en la base de datos"""
         try:
-            connection = mysql.connector(**self.db_config)
+            connection = mysql.connector.connect(**self.db_config)
             cursor = connection.cursor()
             cursor.execute("CREATE TABLE IF NOT EXISTS links (id INT AUTO_INCREMENT PRIMARY KEY, url TEXT, parent_url TEXT)")
+            
             for link in links:
+                print(f"Guardando enlace: {link} (parent: {url})")  # Verifica los datos  
                 cursor.execute("INSERT INTO links (url, parent_url) VALUES (%s, %s)", (link, url))
+
             connection.commit()
             cursor.close()
             connection.close()
-        except:
-            print(f"Error al gaurdar en la base de datos")
+        except Exception as e:
+            print(f"Error al gaurdar en la base de datos: {e}")
 
     def get_url_from_ui(self):  
         """Obtiene la URL desde la interfaz de usuario"""  
