@@ -102,7 +102,7 @@ class CenteredWindow(ctk.CTk):
         start_button.pack(pady=5, padx=10)
 
         stop_button = ctk.CTkButton(left_panel, text="Detener Scrapping", command=self.thread_manager.tasks["scrapper"].stop)
-        stop_button.pack("pady=5, padx=10")
+        stop_button.pack(pady=5, padx=10)
 
 
 

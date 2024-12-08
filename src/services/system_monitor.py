@@ -22,7 +22,7 @@ class SystemMonitor:
             },
             "Processes": {
                 "data": [],
-                "fetch_func": lambda: self.get_process_count,
+                "fetch_func": self.get_process_count,
                 "interval": 1
             }
         }  

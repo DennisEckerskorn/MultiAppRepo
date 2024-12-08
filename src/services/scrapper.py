@@ -9,16 +9,23 @@ class Scrapper:
         self.ui_instance = ui_instance
         self.visited_links = set()
         self.running=False
-        self.lock() = threading.Lock()
+        self.lock = threading.Lock()
 
+        #Configurar la base de datos para los enlaces
+        self.db_config = {
+            "host": "localhost",
+            "user": "root",
+            "password": "",
+            "database": "scrap_links_db",
+            "port": 3306
+        }
 
-    #Configurar la base de datos para los enlaces
-    self.db.config = {
-        "host": "localhost",
-        "user": "root",
-        "password": "1234Scrap",
-        "database": "scrap_links_db"
-    }
+        try:
+            connection = mysql.connector.connect(**self.db_config)
+            print("Conexion exitosa a base de datos")
+            connection.close()
+        except Exception as e:
+            print(f"Error al conectar a la base de datos: {e}")
 
     def start_scraping(self):
         """Inicia el proceso de scraping"""
@@ -61,11 +68,10 @@ class Scrapper:
         text_widget = tab.text_widget
         text_widget.insert("end", f"Enlaces encontrados en {url}:\n")
         for link in links:
-            text_widget.insert("end", f" - {link}\n")
-            text_widget.insert("end", "\n")
-            text_widget.see("end")
+            text_widget.insert("end", f" - {link}\n")  
+            text_widget.see("end") 
 
-    def save_links_to_db(self, url, links)
+    def save_links_to_db(self, url, links):
         """Guarda los enlaces en la base de datos"""
         try:
             connection = mysql.connector(**self.db_config)
@@ -75,6 +81,7 @@ class Scrapper:
                 cursor.execute("INSERT INTO links (url, parent_url) VALUES (%s, %s)", (link, url))
                 connection.commit()
                 cursor.close()
+                connection.close()
         except:
             print(f"Error al gaurdar en la base de datos")
 
