@@ -6,6 +6,7 @@ import random
 from services.threaden_task import ThreadenTask
 from services.system_monitor import SystemMonitor
 from services.tetris_game import TetrisGame
+from services.scrapper import Scrapper
 
 class ThreadsManager:
     """Constructor"""
@@ -17,8 +18,10 @@ class ThreadsManager:
             "temperature": ThreadenTask(), 
             "emails":ThreadenTask(),
             "tetris_game":ThreadenTask(),
+            "scrapper":ThreadenTask(),
         }
         self.system_monitor_tasks = {}
+        self.scrapper = Scrapper(ui_instance)
       
 
 
@@ -35,6 +38,7 @@ class ThreadsManager:
         self.tasks["time"].start(self.update_time)
         self.tasks["temperature"].start(self.update_temperature)
         self.tasks["emails"].start(self.update_emails)
+        self.tasks["scrapper"].start(self.scrapper.start_scraping)
 
         if self.system_monitor:
             for metric in self.system_monitor.metrics.keys():
