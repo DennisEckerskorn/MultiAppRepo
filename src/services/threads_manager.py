@@ -38,7 +38,7 @@ class ThreadsManager:
         self.tasks["time"].start(self.update_time)
         self.tasks["temperature"].start(self.update_temperature)
         self.tasks["emails"].start(self.update_emails)
-        self.tasks["scrapper"].start(self.scrapper.start_scraping)
+        
 
         if self.system_monitor:
             for metric in self.system_monitor.metrics.keys():

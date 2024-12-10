@@ -92,5 +92,5 @@ class SystemMonitor:
 
         # Convierte a KB/s  
         total_kb = (sent_bytes + recv_bytes) / 1024
-        print(f"Network Usage: {total_kb} KB/s")
+        #print(f"Network Usage: {total_kb} KB/s")
         return total_kb 
