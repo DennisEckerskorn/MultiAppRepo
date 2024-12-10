@@ -80,6 +80,19 @@ class CenteredWindow(ctk.CTk):
             ]
         }
 
+        url_label = ctk.CTkLabel(left_panel, text="Abrir URL en Chrome", font=("Arial", 12, "bold"))
+        url_label.pack(anchor=ctk.W, pady=5, padx=10)
+        url_entry_chrome = ctk.CTkEntry(left_panel, placeholder_text="Introduce la URL para navegar")
+        url_entry_chrome.pack(pady=5, padx=10)
+
+        # Botón para abrir la URL ingresada  
+        internet_access_button = ctk.CTkButton(  
+            left_panel,  
+            text="Buscar URL",  
+            command=lambda: self.process_manager.open_resource("browser", url_entry_chrome.get(), "Cannot open browser")  
+        )  
+        internet_access_button.pack(pady=5, padx=10)
+        
         for section, buttons in sections.items():
             if section:
                 section_label = ctk.CTkLabel(left_panel, text=section, font=("Arial", 12, "bold"))
@@ -91,11 +104,12 @@ class CenteredWindow(ctk.CTk):
 
         scrapping_label = ctk.CTkLabel(left_panel, text="Scrapping", font=("Arial", 12, "bold"))
         scrapping_label.pack(anchor=ctk.W, pady=5, padx=10)
-        url_entry = ctk.CTkEntry(left_panel, placeholder_text="Introduce la URL")  
+        url_entry = ctk.CTkEntry(left_panel, placeholder_text="Introduce la URL para scrapear")  
         url_entry.pack(pady=5, padx=10)  
 
         self.left_panel = left_panel
-        self.left_panel.url_entry = url_entry  
+        self.left_panel.url_entry = url_entry
+        self.left_panel.url_entry_chrome = url_entry_chrome
         start_button = ctk.CTkButton(left_panel, text="Iniciar Scrapping", command=lambda:
                                      self.thread_manager.tasks["scrapper"].start(self.thread_manager.scrapper.start_scraping))
         start_button.pack(pady=5, padx=10)
