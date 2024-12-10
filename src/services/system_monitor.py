@@ -8,7 +8,8 @@ class SystemMonitor:
     def __init__(self, parent_frame):  
         self.parent_frame = parent_frame  
         self.max_data_points = 60  
-        self.running = False  
+        self.running = False
+        self.previous_net_io = psutil.net_io_counters()
         self.metrics = {  
             "CPU Usage": {  
                 "data": [],  
@@ -20,9 +21,9 @@ class SystemMonitor:
                 "fetch_func": lambda: psutil.virtual_memory().percent,  
                 "interval": 1  
             },
-            "Processes": {
+            "Network Usage (KB/s)": {
                 "data": [],
-                "fetch_func": self.get_process_count,
+                "fetch_func": self.get_network_usage,
                 "interval": 1
             }
         }  
@@ -76,11 +77,20 @@ class SystemMonitor:
 
         def redraw():  
             graph["line"].set_data(x, data)  
-            graph["axis"].set_xlim(0, len(data))  
+            graph["axis"].set_xlim(0, len(data))
+            graph["axis"].set_ylim(0, max(data) * 1.2 if data else 100) 
             graph["figure"].canvas.draw()  
 
         self.parent_frame.after(0, redraw)  
 
-    def get_process_count(self):  
-        """Obtiene el número de procesos actuales."""  
-        return len(psutil.pids())
+    def get_network_usage(self):  
+        """Calcula la velocidad de transferencia de red en KB/s."""  
+        current_net_io = psutil.net_io_counters()  
+        sent_bytes = current_net_io.bytes_sent - self.previous_net_io.bytes_sent  
+        recv_bytes = current_net_io.bytes_recv - self.previous_net_io.bytes_recv  
+        self.previous_net_io = current_net_io  # Actualiza los datos previos  
+
+        # Convierte a KB/s  
+        total_kb = (sent_bytes + recv_bytes) / 1024
+        print(f"Network Usage: {total_kb} KB/s")
+        return total_kb 
