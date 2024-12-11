@@ -195,7 +195,7 @@ python src/main.py
 
 ## Enlace al video de demostración:
 ```
-**https://youtu.be/8Gc7rDi7H-c**
+[Ver video de demostración: ](https://youtu.be/8Gc7rDi7H-c)
 ```
 
 ## Autor  
