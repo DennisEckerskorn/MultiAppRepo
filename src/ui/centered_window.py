@@ -4,11 +4,13 @@ import webbrowser
 import subprocess
 import os
 import threading
+from tkinter import filedialog
 
 from services.threads_manager import ThreadsManager
 from services.processes_manager import ProcessManager
 from services.tetris_game import TetrisGame
 from services.system_monitor import SystemMonitor
+from services.Radio_Player import RadioPlayer
 
 
 class CenteredWindow(ctk.CTk):
@@ -128,8 +130,11 @@ class CenteredWindow(ctk.CTk):
         tab_view.pack(fill=ctk.BOTH, expand=True)
 
         # Crear pestañas y manejar contenido por separado
-        for tab_name in ["Scrapping", "Navegador", "Correos", "Juego", "Sistema"]:
+        for tab_name in ["Scrapping", "Radio", "Correos", "Juego", "Sistema"]:
             tab = tab_view.add(tab_name)
+            
+            if tab_name == "Radio":  
+                self.create_radio_tab(tab)  
 
             if tab_name == "Scrapping":
                 text_widget = ctk.CTkTextbox(tab, width=500, height=400)
@@ -250,3 +255,54 @@ class CenteredWindow(ctk.CTk):
 
     def dummy_action(self):
         print("Acción no implementada")
+        
+    def create_radio_tab(self, tab):  
+        """Crea la interfaz para la funcionalidad de emisoras de radio."""  
+        self.radio_player = self.thread_manager.radio_player  
+
+        # Lista de emisoras  
+        radio_stations = {  
+            "Box Radio UK": "http://uk2.internet-radio.com:8024/",  
+            "Radio 2": "http://stream-url-2.com/stream",  
+            "Radio 3": "http://stream-url-3.com/stream",  
+        }  
+
+        # Dropdown para seleccionar emisora  
+        self.selected_station = ctk.StringVar(value="Selecciona una emisora")  
+        station_menu = ctk.CTkOptionMenu(tab, variable=self.selected_station, values=list(radio_stations.keys()))  
+        station_menu.pack(pady=10)  
+
+        # Botón para reproducir  
+        play_button = ctk.CTkButton(  
+            tab,  
+            text="Reproducir",  
+            command=lambda: self.start_radio(radio_stations[self.selected_station.get()])  
+        )  
+        play_button.pack(pady=5)  
+
+        # Botón para detener  
+        stop_button = ctk.CTkButton(  
+            tab,  
+            text="Detener",  
+            command=self.stop_radio,  
+            state=tk.DISABLED  # Deshabilitado inicialmente  
+        )  
+        stop_button.pack(pady=5)  
+
+        # Guardar referencias para habilitar/deshabilitar botones  
+        self.radio_controls = {"play_button": play_button, "stop_button": stop_button}  
+
+    def start_radio(self, url):  
+        """Inicia la reproducción de radio y actualiza los botones."""  
+        if url == "Selecciona una emisora":  
+            tk.messagebox.showwarning("Advertencia", "Por favor, selecciona una emisora válida.")  
+            return  
+        self.radio_player.play(url)  
+        self.radio_controls["play_button"].configure(state=tk.DISABLED)  
+        self.radio_controls["stop_button"].configure(state=tk.NORMAL)     
+
+    def stop_radio(self):  
+        """Detiene la reproducción de radio y actualiza los botones."""  
+        self.radio_player.stop()  
+        self.radio_controls["play_button"].configure(state=tk.NORMAL)  
+        self.radio_controls["stop_button"].configure(state=tk.DISABLED)

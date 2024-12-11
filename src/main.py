@@ -9,5 +9,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-    #self.tasks["scrapper"].start(self.scrapper.start_scraping)

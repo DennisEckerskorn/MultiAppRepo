@@ -7,23 +7,33 @@ from services.threaden_task import ThreadenTask
 from services.system_monitor import SystemMonitor
 from services.tetris_game import TetrisGame
 from services.scrapper import Scrapper
+from services.Radio_Player import RadioPlayer
 
 class ThreadsManager:
     """Constructor"""
     def __init__(self, ui_instance):
         self.ui_instance = ui_instance
         self.system_monitor = None
+        self.radio_player = RadioPlayer()
         self.tasks = {
             "time": ThreadenTask(),
             "temperature": ThreadenTask(), 
             "emails":ThreadenTask(),
             "tetris_game":ThreadenTask(),
             "scrapper":ThreadenTask(),
+            "radio_player": ThreadenTask(),
         }
         self.system_monitor_tasks = {}
         self.scrapper = Scrapper(ui_instance)
-      
+        
+    def play_radio(self, url):  
+        """Inicia la reproducción de radio en un hilo."""  
+        if not self.tasks["radio_player"].running:  
+            self.tasks["radio_player"].start(self.radio_player.play, url)  
 
+    def stop_radio(self):  
+        """Detiene la reproducción de radio."""  
+        self.radio_player.stop()
 
     def set_system_monitor(self, system_monitor):
         """Asigna el monitor del sistema y crea sus tareas"""
