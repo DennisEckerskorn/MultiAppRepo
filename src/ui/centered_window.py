@@ -263,8 +263,8 @@ class CenteredWindow(ctk.CTk):
         # Lista de emisoras  
         radio_stations = {  
             "Box Radio UK": "http://uk2.internet-radio.com:8024/",  
-            "Radio 2": "http://stream-url-2.com/stream",  
-            "Radio 3": "http://stream-url-3.com/stream",  
+            "Jazz Radio": "http://us2.internet-radio.com:8443/",  
+            "Deep House Radio": "http://uk7.internet-radio.com:8000/",  
         }  
 
         # Dropdown para seleccionar emisora  

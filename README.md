@@ -94,6 +94,45 @@ Implementa un juego de Tetris completamente funcional dentro de la aplicación.
 
 ---  
 
+### 8. `RadioPlayer` (ubicada en `src/services/Radio_Player.py`)  
+
+Esta clase permite la reproducción de emisoras de radio en línea dentro de la aplicación. Utiliza la biblioteca `vlc` para manejar la reproducción de audio y está integrada con la interfaz gráfica para seleccionar y controlar las emisoras.  
+
+- **Responsabilidades**:  
+  - Reproducir emisoras de radio desde URLs proporcionadas.  
+  - Manejar la reproducción en segundo plano utilizando hilos.  
+  - Detener la reproducción de la emisora actual.  
+
+- **Métodos principales**:  
+  - `play(url)`: Inicia la reproducción de la emisora desde la URL proporcionada.  
+  - `stop()`: Detiene la reproducción de la emisora actual.  
+  - `play_radio(url)`: Método interno que maneja la reproducción continua de la emisora en un hilo.  
+
+- **Integración con la interfaz**:  
+  - La funcionalidad de la radio está disponible en la pestaña "Radio" de la aplicación.  
+  - Los usuarios pueden seleccionar una emisora de una lista desplegable y controlarla con botones de "Reproducir" y "Detener".  
+
+---  
+
+## Uso de la funcionalidad de radio  
+
+1. Ve a la pestaña "Radio" en la aplicación.  
+2. Selecciona una emisora de la lista desplegable.  
+3. Haz clic en el botón "Reproducir" para iniciar la reproducción.  
+4. Para detener la reproducción, haz clic en el botón "Detener".  
+
+---  
+
+## Ejemplo de emisoras disponibles  
+
+- **Box Radio UK**: `http://uk2.internet-radio.com:8024/`  
+- **Jazz Radio**: `http://us2.internet-radio.com:8443/`  
+- **Deep House Radio**: `http://uk7.internet-radio.com:8000/`  
+
+Puedes agregar más emisoras modificando el diccionario `radio_stations` en la pestaña "Radio" dentro del archivo `src/ui/centered_window.py`.  
+
+---
+
 ## Requisitos del sistema  
 
 - Python 3.8 o superior.  
