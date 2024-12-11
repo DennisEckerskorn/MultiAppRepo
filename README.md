@@ -7,7 +7,8 @@ MultiApp es una aplicación de escritorio desarrollada en Python que combina mú
 - **Interfaz gráfica moderna**: Construida con `customtkinter` para una experiencia de usuario mejorada.  
 - **Scrapping web**: Permite extraer enlaces de páginas web y almacenarlos en una base de datos.  
 - **Monitor del sistema**: Muestra métricas en tiempo real como uso de CPU, RAM y red.  
-- **Juego de Tetris**: Incluye un juego de Tetris completamente funcional.  
+- **Juego de Tetris**: Incluye un juego de Tetris completamente funcional.
+- **Reproductor de Radio**: Permite reproducir emisoras de radio.
 - **Gestión de procesos**: Abre programas, archivos o URLs directamente desde la aplicación.  
 - **Gestión de hilos**: Maneja múltiples tareas concurrentes de manera eficiente.  
 
