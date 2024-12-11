@@ -142,7 +142,8 @@ Puedes agregar más emisoras modificando el diccionario `radio_stations` en la p
   - `matplotlib`  
   - `requests`  
   - `beautifulsoup4`  
-  - `mysql-connector-python`  
+  - `mysql-connector-python`
+  - `python-vlc`
 
 ---  
 
