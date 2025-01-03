@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import mysql.connector
 from queue import Queue
+from services.threaden_task import ThreadenTask
 
 #http://books.toscrape.com/ test scrap web
 
@@ -11,7 +12,7 @@ class Scrapper:
     def __init__(self, ui_instance):
         self.ui_instance = ui_instance
         self.visited_links = set()
-        self.running=False
+        self.running = False
         self.lock = threading.Lock()
         self.link_queue = Queue()
 
@@ -31,6 +32,10 @@ class Scrapper:
         except Exception as e:
             print(f"Error al conectar a la base de datos: {e}")
 
+        #Tareas para el scrapping y la base de datos
+        self.scraping_task = ThreadenTask()
+        self.db_task = ThreadenTask()
+
     def start_scraping(self):
         """Inicia el proceso de scraping"""
         if self.running:
@@ -38,20 +43,24 @@ class Scrapper:
             return
 
         self.running = True
+        self.visited_links.clear()
+        self.link_queue.queue.clear()
+
         url = self.get_url_from_ui()
         if url:  
             print(f"Iniciando scraping en: {url}")
-            threading.Thread(target=self.scrape_page, args=(url,), daemon=True).start()
-            threading.Thread(target=self.insert_links_to_db, daemon=True).start()
+            self.scraping_task.start(self.scrape_page, url)
+            self.db_task.start(self.insert_links_to_db)
         else:  
             print("No se proporcionó una URL válida.")  
             
     def stop_scraping(self):  
         """Detiene el proceso de scraping"""  
-        print("Deteniendo el proceso de scraping...")  
+        print("Deteniendo el proceso de scraping...") 
+        self.running = False 
         # Detener las tareas  
-        self.scraping_task.stop_thread()  
-        self.db_task.stop()  
+        self.scraping_task.stop()
+        self.db_task.stop()
 
         # Inserta un sentinel (None) en la cola para detener el hilo de inserción  
         self.link_queue.put(None)  
@@ -79,7 +88,8 @@ class Scrapper:
             if response.status_code == 200:  
                 soup = BeautifulSoup(response.text, "html.parser")  
                 links = [urljoin(url, a.get("href")) for a in soup.find_all("a", href=True)]  
-                self.update_ui(url, links)  
+                if self.running:
+                    self.update_ui(url, links)  
 
                 for link in links:  
                     if not self.running:  
@@ -112,7 +122,7 @@ class Scrapper:
 
     def insert_links_to_db(self):  
         """Inserta los enlaces en la base de datos desde la cola"""  
-        while True:  
+        while self.db_task.running:  
             try:  
                 # Obtener un enlace de la cola  
                 item = self.link_queue.get(timeout=1)  

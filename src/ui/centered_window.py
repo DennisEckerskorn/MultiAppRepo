@@ -64,6 +64,9 @@ class CenteredWindow(ctk.CTk):
         if "tetris_game" in self.thread_manager.tasks:  
             self.thread_manager.tasks["tetris_game"].stop()
 
+        if hasattr(self.thread_manager, "scrapper"):
+            self.thread_manager.scrapper.stop_scraping()
+
         self.destroy()
 
 
@@ -112,11 +115,10 @@ class CenteredWindow(ctk.CTk):
         self.left_panel = left_panel
         self.left_panel.url_entry = url_entry
         self.left_panel.url_entry_chrome = url_entry_chrome
-        start_button = ctk.CTkButton(left_panel, text="Iniciar Scrapping", command=lambda:
-                                     self.thread_manager.tasks["scrapper"].start(self.thread_manager.scrapper.start_scraping))
+        start_button = ctk.CTkButton(left_panel, text="Iniciar Scrapping", command=self.thread_manager.scrapper.start_scraping)
         start_button.pack(pady=5, padx=10)
 
-        stop_button = ctk.CTkButton(left_panel, text="Detener Scrapping", command=self.thread_manager.tasks["scrapper"].stop)
+        stop_button = ctk.CTkButton(left_panel, text="Detener Scrapping", command=self.thread_manager.scrapper.stop_scraping)
         stop_button.pack(pady=5, padx=10)
 
 
@@ -177,10 +179,10 @@ class CenteredWindow(ctk.CTk):
                 self.tetris_game = TetrisGame(game_frame)
                 self.tetris_game.pack()
 
-            else:
+           # else:
                 # Agregar contenido genérico a otras pestañas
-                label = ctk.CTkLabel(tab, text=f"Contenido de {tab_name}", font=("Arial", 12))
-                label.pack(pady=10)
+                #label = ctk.CTkLabel(tab, text=f"Contenido de {tab_name}", font=("Arial", 12))
+                #label.pack(pady=10)
 
 
 
