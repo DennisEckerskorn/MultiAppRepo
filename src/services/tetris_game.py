@@ -1,5 +1,6 @@
 import tkinter as tk
 import random
+from tkinter import messagebox
 
 class TetrisGame(tk.Canvas):
     def __init__(self, parent, width=300, height=600, cell_size=30):
@@ -16,7 +17,6 @@ class TetrisGame(tk.Canvas):
     def init_game(self):
         self.bind_all("<Key>", self.handle_keypress)
         self.spawn_piece()
-        #self.update_game()
 
     def spawn_piece(self):
         shapes = [
@@ -27,11 +27,24 @@ class TetrisGame(tk.Canvas):
             [[1, 1, 0], [0, 1, 1]],  # Z-shape
         ]
         shape = random.choice(shapes)
+        start_row = 0
+        start_col = (self.cols - len(shape[0])) // 2
+
+        if not self.can_place(shape, start_row, start_col):
+            self.end_game()  # Finaliza el juego si no hay espacio
+            return
+        
         self.current_piece = {
             "shape": shape,
-            "row": 0,
-            "col": (self.cols - len(shape[0])) // 2,
+            "row": start_row,
+            "col": start_col,
         }
+
+    def end_game(self):
+        """Finaliza el juego y muestra un mensaje."""
+        self.running = False
+        messagebox.showinfo("Game Over", "¡Has perdido! Intenta nuevamente.")
+        self.reset_game()
 
     def draw_piece(self):
         shape = self.current_piece["shape"]
