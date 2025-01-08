@@ -1,13 +1,13 @@
 import datetime
-import time
-import requests
 import random
+import time
 
-from services.threaden_task import ThreadenTask
-from services.system_monitor import SystemMonitor
-from services.tetris_game import TetrisGame
-from services.scrapper import Scrapper
-from services.Radio_Player import RadioPlayer
+import requests
+
+from src.services.Radio_Player import RadioPlayer
+from src.services.scrapper import Scrapper
+from src.services.threaden_task import ThreadenTask
+
 
 class ThreadsManager:
     """Constructor"""

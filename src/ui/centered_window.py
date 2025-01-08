@@ -1,16 +1,11 @@
-import customtkinter as ctk
 import tkinter as tk
-import webbrowser
-import subprocess
-import os
-import threading
-from tkinter import filedialog
 
-from services.threads_manager import ThreadsManager
-from services.processes_manager import ProcessManager
-from services.tetris_game import TetrisGame
-from services.system_monitor import SystemMonitor
-from services.Radio_Player import RadioPlayer
+import customtkinter as ctk
+
+from src.services.processes_manager import ProcessManager
+from src.services.system_monitor import SystemMonitor
+from src.services.tetris_game import TetrisGame
+from src.services.threads_manager import ThreadsManager
 
 
 class CenteredWindow(ctk.CTk):

@@ -1,4 +1,4 @@
-from ui.centered_window import CenteredWindow
+from src.ui.centered_window import CenteredWindow
 
 def main():
     try:

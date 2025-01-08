@@ -1,6 +1,6 @@
 import vlc  
 import time  
-from services.threaden_task import ThreadenTask  
+from src.services.threaden_task import ThreadenTask
 
 class RadioPlayer:  
     def __init__(self):  

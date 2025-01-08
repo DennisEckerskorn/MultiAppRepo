@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import mysql.connector
 from queue import Queue
-from services.threaden_task import ThreadenTask
+from src.services.threaden_task import ThreadenTask
 
 #http://books.toscrape.com/ test scrap web
 
