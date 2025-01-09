@@ -1,7 +1,5 @@
 import datetime
-import random
 import time
-
 import requests
 
 from src.services.Radio_Player import RadioPlayer
@@ -11,8 +9,9 @@ from src.services.threaden_task import ThreadenTask
 
 class ThreadsManager:
     """Constructor"""
-    def __init__(self, ui_instance):
+    def __init__(self, ui_instance, email_client):
         self.ui_instance = ui_instance
+        self.email_client = email_client
         self.system_monitor = None
         self.radio_player = RadioPlayer()
         self.tasks = {
@@ -40,8 +39,6 @@ class ThreadsManager:
         self.system_monitor = system_monitor
         for metric in system_monitor.metrics.keys():
             self.system_monitor_tasks[metric] = ThreadenTask()
-
-
 
     def start_threads(self):
         """Se inician los hilos, Tiempo, Temperatura, Emails"""
@@ -137,15 +134,33 @@ class ThreadsManager:
             return None
         
 
-
     def update_emails(self):
-        count = 0
+        """Actualiza la cantidad de correos no leidos en tiempo real"""
         while self.tasks["emails"].running:
-            count += random.randint(0, 2)  # Simula la llegada de 0-2 correos
-            self.ui_instance.after(
-                0,
-                lambda: self.ui_instance.info_labels["emails"].configure(text=f"Correos sin leer: {count}")
-            )
-            time.sleep(20)  # Actualiza cada 10 segundos
+            try:
+                if not self.email_client.is_connected():
+                    self.email_client.reconnect()
+
+                if self.email_client.is_connected():
+                    unread_count = self.email_client.fetch_unread_count()
+                    self.ui_instance.after(
+                        0,
+                        lambda: self.ui_instance.info_labels["emails"].configure(
+                            text=f"Correos sin leer: {unread_count}"
+                        )
+                    )
+                else:
+                    print("No hay conexión al servidor de correo")
+                    self.ui_instance.after(
+                        0,
+                        lambda: self.ui_instance.info_labels["emails"].configure(
+                            text="Servidor no disponible"
+                        )
+                    )
+            except Exception as e:
+                print(f"Error en el hilo de correos: {e}")
+            time.sleep(60)
+
+
 
    
