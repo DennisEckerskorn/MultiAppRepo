@@ -14,6 +14,7 @@ class CenteredWindow(ctk.CTk):
         # Inicializacion de la clase:
         super().__init__()
         self.title(title)
+        self.after_tasks = []
 
         #Configurar Email Client
         self.email_client = EmailClient(
@@ -46,8 +47,13 @@ class CenteredWindow(ctk.CTk):
 
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
+    def schedule_tasks(self, delay, callback):
+        task_id = self.after(delay, callback)
+        self.after_tasks.append(task_id)
+        return task_id
+
     def configure_window(self):
-        # Configuracion de la ventana:
+        # Configuración de la ventana:
         self.configure(bg_color="lightgray")
         self.create_left_panel()
         self.create_right_panel()
@@ -70,9 +76,13 @@ class CenteredWindow(ctk.CTk):
         if hasattr(self.thread_manager, "scrapper"):
             self.thread_manager.scrapper.stop_scraping()
 
+        if self.system_monitor:
+            self.system_monitor.running = False
+
+        for task in self.after_tasks:
+            self.after_cancel(task)
+
         self.destroy()
-
-
 
     def create_left_panel(self):
         # Panel izquierdo

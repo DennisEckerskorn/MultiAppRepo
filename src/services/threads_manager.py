@@ -18,6 +18,7 @@ class ThreadsManager:
             "time": ThreadenTask(),
             "temperature": ThreadenTask(), 
             "emails":ThreadenTask(),
+            "email_client":ThreadenTask(),
             "tetris_game":ThreadenTask(),
             "scrapper":ThreadenTask(),
             "radio_player": ThreadenTask(),
@@ -45,7 +46,7 @@ class ThreadsManager:
         self.tasks["time"].start(self.update_time)
         self.tasks["temperature"].start(self.update_temperature)
         self.tasks["emails"].start(self.update_emails)
-        
+        self.tasks["email_client"].start(self.manage_email_client())
 
         if self.system_monitor:
             for metric in self.system_monitor.metrics.keys():
@@ -104,8 +105,6 @@ class ThreadsManager:
             self.ui_instance.after(0, lambda: self.ui_instance.info_labels["fecha"].configure(text=f"Fecha: {current_date}"))
             time.sleep(1)
 
-
-
     def update_temperature(self):
         API_KEY = "4ba2b87d7fa32934530b5b4a5a83ebf7"  # Reemplaza con tu clave de OpenWeatherMap
         CITY = "Madrid"  # Cambia por tu ciudad
@@ -121,8 +120,6 @@ class ThreadsManager:
                 print(f"Error al obtener la temperatura: {e}")
             time.sleep(600)  # Actualiza cada 10 minutos
 
-
-
     def get_real_temperature(self, api_key, city):
         url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
         response = requests.get(url)
@@ -132,7 +129,16 @@ class ThreadsManager:
         else:
             print(f"Error al obtener la temperatura: {response.status_code}")
             return None
-        
+
+    def manage_email_client(self):
+        while self.tasks["email_client"].running:
+            try:
+                if not self.email_client.is_connected():
+                    self.email_client.reconnect()
+                time.sleep(10)
+            except Exception as e:
+                print(f"Error en el EmailClient: {e}")
+                time.sleep(10)
 
     def update_emails(self):
         """Actualiza la cantidad de correos no leidos en tiempo real"""

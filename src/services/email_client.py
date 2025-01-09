@@ -61,15 +61,19 @@ class EmailClient:
             return [folder.decode().split(' "/" ')[-1] for folder in folders]
         return []
 
-    def list_emails(self, limit=10):
+    def list_emails(self, folder="INBOX", limit=10):
         """Lista de correos más recientes"""
-        self.imap_conn.select("INBOX")
+        self.imap_conn.select(folder)
         status, response = self.imap_conn.search(None, "ALL")
         email_ids = response[0].split()[-limit:]
         emails = []
         for email_id in email_ids:
             status, msg_data = self.imap_conn.fetch(email_id, "(RFC822)")
-            emails.append(msg_data[0][1].decode("utf-8"))
+            msg = message_from_bytes(msg_data[0][1])
+            subject, encoding = decode_header(msg["Subject"])[0]
+            if isinstance(subject, bytes):
+                subject = subject.decode(encoding or "utf-8")
+            emails.append(subject)
         return emails
 
     def send_mail(self, to_address, subject, body):
