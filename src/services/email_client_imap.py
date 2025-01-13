@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email import message_from_bytes
 from email.header import decode_header
 
-class EmailClient:
+class EmailClientImap:
     def __init__(self, imap_server, smtp_server, email, password, imap_port=143, smtp_port=25):
         self.imap_server = imap_server
         self.smtp_server = smtp_server

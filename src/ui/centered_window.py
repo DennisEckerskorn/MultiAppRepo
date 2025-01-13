@@ -6,7 +6,7 @@ from src.services.processes_manager import ProcessManager
 from src.services.system_monitor import SystemMonitor
 from src.services.tetris_game import TetrisGame
 from src.services.threads_manager import ThreadsManager
-from src.services.email_client import EmailClient
+from src.services.email_client_imap import EmailClientImap
 
 
 class CenteredWindow(ctk.CTk):
@@ -17,7 +17,7 @@ class CenteredWindow(ctk.CTk):
         self.after_tasks = []
 
         #Configurar Email Client
-        self.email_client = EmailClient(
+        self.email_client = EmailClientImap(
             imap_server="192.168.120.103",
             smtp_server="192.168.120.103",
             email="dennis@psp.ieslamar.org",
