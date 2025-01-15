@@ -19,6 +19,7 @@ class EmailClientPOP:
         self.smtp_port = smtp_port
         self.pop_conn = None
         self.smtp_conn = None
+        self.running = True
 
         # Ruta del archivo SQLite:
         self.db_file = os.path.join("resources/db_email", "emails.db")
@@ -59,7 +60,7 @@ class EmailClientPOP:
     def connect_pop(self):
         """Conexión al servidor POP"""
         try:
-            self.pop_conn = poplib.POP3(self.pop_server, self.pop_port)
+            self.pop_conn = poplib.POP3(self.pop_server, self.pop_port, timeout=10)
             self.pop_conn.user(self.email)
             self.pop_conn.pass_(self.password)
             print("Conexión POP exitosa")
@@ -70,7 +71,7 @@ class EmailClientPOP:
     def connect_smtp(self):
         """Conexión al servidor SMTP"""
         try:
-            self.smtp_conn = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            self.smtp_conn = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=10)
             self.smtp_conn.login(self.email, self.password)
             print("Conexión SMTP exitosa")
         except Exception as e:
@@ -84,8 +85,12 @@ class EmailClientPOP:
     def reconnect(self):
         """Intenta reconectar a los servidores POP y SMTP"""
         print("Intentando reconectar al servidor de correo...")
-        self.connect_pop()
-        self.connect_smtp()
+        if not self.running:
+            return
+        if self.pop_conn is None:
+            self.connect_pop()
+        if self.smtp_conn is None:
+            self.connect_smtp()
 
     def fetch_unread_count(self):
         """Obtener el número de correos (POP3 no distingue entre leídos y no leídos)"""
@@ -203,7 +208,18 @@ class EmailClientPOP:
 
     def close_connections(self):
         """Cierra las conexiones POP y SMTP"""
-        if self.pop_conn:
-            self.pop_conn.quit()
-        if self.smtp_conn:
-            self.smtp_conn.quit()
+        try:
+            if self.pop_conn:
+                self.pop_conn.quit()
+                self.pop_conn = None
+                print("Conexión POP cerrada.")
+        except Exception as e:
+            print(f"Error al cerrar conexión POP: {e}")
+
+        try:
+            if self.smtp_conn:
+                self.smtp_conn.quit()
+                self.smtp_conn = None
+                print("Conexión SMTP cerrada.")
+        except Exception as e:
+            print(f"Error al cerrar conexión SMTP: {e}")

@@ -64,24 +64,37 @@ class CenteredWindow(ctk.CTk):
 
     def on_close(self):
         """Maneja el cierre de la ventana"""
-        self.thread_manager.stop_threads()
+        try:
+            # Establecer bandera de cierre para el cliente de correo
+            if hasattr(self, "email_client") and self.email_client:
+                self.email_client.running = False
 
-        if hasattr(self, "tetris_game") and self.tetris_game.running:
-            self.tetris_game.stop_game()
+            # Detener todos los hilos
+            self.thread_manager.stop_threads()
 
-        if "tetris_game" in self.thread_manager.tasks:
-            self.thread_manager.tasks["tetris_game"].stop()
+            # Cancelar tareas programadas en Tkinter
+            for task in self.after_tasks:
+                try:
+                    self.after_cancel(task)
+                except Exception as e:
+                    print(f"Error al cancelar tarea programada: {e}")
 
-        if hasattr(self.thread_manager, "scrapper"):
-            self.thread_manager.scrapper.stop_scraping()
+            # Cerrar conexiones del cliente POP/SMTP
+            if hasattr(self, "email_client") and self.email_client:
+                self.email_client.close_connections()
 
-        if self.system_monitor:
-            self.system_monitor.running = False
+            # Detener tareas adicionales (Tetris, scraping)
+            if hasattr(self, "tetris_game") and self.tetris_game.running:
+                self.tetris_game.stop_game()
 
-        for task in self.after_tasks:
-            self.after_cancel(task)
+            if hasattr(self.thread_manager, "scrapper") and self.thread_manager.scrapper:
+                self.thread_manager.scrapper.stop_scraping()
 
-        self.destroy()
+            # Destruir la ventana principal
+            self.destroy()
+            print("Aplicación cerrada correctamente.")
+        except Exception as e:
+            print(f"Error al cerrar la aplicación: {e}")
 
     def create_left_panel(self):
         # Panel izquierdo
@@ -335,7 +348,7 @@ class CenteredWindow(ctk.CTk):
         listbox_frame.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
         # Crear una lista de correos con un scrollbar
-        self.email_listbox = ctk.CTkTextbox(listbox_frame, width=800, height=800)
+        self.email_listbox = ctk.CTkTextbox(listbox_frame, width=600, height=600)
         self.email_listbox.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
         self.email_listbox.configure(state="disabled")  # Inicialmente deshabilitada
 
@@ -375,9 +388,11 @@ class CenteredWindow(ctk.CTk):
 
             if self.email_client.is_connected():
                 emails = self.email_client.fetch_emails()
-                self.email_listbox.delete(0, tk.END)
+                self.email_listbox.configure(state="normal")
+                self.email_listbox.delete("1.0", tk.END)  # Borra todo el contenido actual
                 for email in emails:
-                    self.email_listbox.insert(tk.END, f"{email['subject']} - {email['from']}")
+                    self.email_listbox.insert(tk.END, f"De: {email['sender']}\nAsunto: {email['subject']}\n\n")
+                self.email_listbox.configure(state="disabled")
             else:
                 print("No hay conexión al servidor de correo.")
         except Exception as e:
